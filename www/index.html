@@ -204,7 +204,7 @@ function mergeBackup(e){
     if(d.settings&&confirm('فایل شامل تنظیمات شرکت نیز هست. تنظیمات فعلی با تنظیمات فایل جایگزین شود؟'))next.settings={...(next.settings||{}),...d.settings};
     try{db=next;persist();await persistQueue;fillSettings();localStorage.setItem('tehranAhan_lastSync',new Date().toISOString());updateSyncStatus();
       const addedTotal=Object.values(counts).reduce((a,b)=>a+b,0),conflictTotal=Object.values(conflicts).reduce((a,b)=>a+b,0);
-      alert('ادغام انجام شد.\nرکوردهای جدید: '+addedTotal+'\nموارد تکراریِ متفاوت که برای جلوگیری از پاک‌شدن اطلاعات رد شدند: '+conflictTotal+'\nفروش: '+counts.sales+' | خرید: '+counts.buys+' | چک: '+counts.checks+' | اشخاص: '+counts.people+' | دریافت/پرداخت: '+counts.cash+' | کالاها: '+(counts.products||0)+'\n\nبرای بررسی موارد متعارض، دو نسخه پشتیبان را جداگانه نگه دارید.');
+      alert('ادغام انجام شد.\nرکوردهای جدید: '+addedTotal+'\nموارد تکراریِ متفاوت که برای جلوگیری از پاک‌شدن اطلاعات رد شدند: '+conflictTotal+'\nفروش: '+counts.sales+' | خرید: '+counts.buys+' | چک: '+counts.checks+' | اشخاص: '+counts.people+' | دریافت/پرداخت: '+counts.cash+' | کالاها: '+(counts.products||0)+' | اصلاح موجودی: '+(counts.stockMovements||0)+'\n\nبرای بررسی موارد متعارض، دو نسخه پشتیبان را جداگانه نگه دارید.');
     }catch(err){alert('ذخیره اطلاعات انجام نشد؛ فضای ذخیره‌سازی مرورگر را بررسی کنید.');}
   });e.target.value='';
 }
