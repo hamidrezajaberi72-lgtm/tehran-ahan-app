@@ -17,6 +17,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Run app smoke tests
+        run: node tests/smoke.cjs
       - name: Install Capacitor
         run: npm install
       - name: Create Android wrapper
