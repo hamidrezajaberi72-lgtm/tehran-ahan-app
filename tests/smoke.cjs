@@ -69,6 +69,7 @@ function harness(extra = {}) {
     buyCalc: () => {},
     invoiceCostFields: prefix => ['Expense','Storage','Scale','Cut','Freight'].map(k => ({ key: k[0].toLowerCase()+k.slice(1), label: ({Expense:'خرج',Storage:'انبارداری',Scale:'باسکول',Cut:'برش',Freight:'کرایه حمل'})[k], amount: Number(values[prefix+'Cost'+k] || 0) })),
     invoiceCostTotal: costs => costs.reduce((sum,x) => sum+x.amount,0),
+    invoiceBrandHeader: (settings,title) => `<div class="invoice-brand">${String(settings.name||'طهران آهن')}</div><div class="invoice-doc-title">${title}</div>`,
     resetSale: () => { ctx.saleBasket = []; },
     window: { scrollTo: () => {} },
     document: { body: { scrollHeight: 1000 } },
@@ -163,6 +164,8 @@ function runFunction(name, nextName, ctx) {
   ];
   runFunction('makeInvoice', 'makeDeliveryReceipt', c)(1, false);
   assert.match(c.$('invoiceBody').innerHTML, /جمع کل با هزینه‌ها: 140/);
+  assert.match(c.$('invoiceBody').innerHTML, /invoice-brand/);
+  assert.match(c.$('invoiceBody').innerHTML, /فاکتور قطعی فروش/);
   assert.match(c.$('invoiceBody').innerHTML, /مبلغ دریافت‌شده: 50/);
   assert.equal((c.$('invoiceBody').innerHTML.match(/<tr>/g) || []).length, 3);
   c.db.sales[0].deliveryRecipient = 'تحویل‌گیرنده تست';
