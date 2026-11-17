@@ -77,7 +77,7 @@ function harness(extra = {}) {
     Set,
     ...extra
   };
-  vm.runInNewContext(getFunction('allocateInvoiceCosts', 'saleNumbers') + '\\nthis.allocateInvoiceCosts = allocateInvoiceCosts;', ctx);
+  vm.runInNewContext(getFunction('allocateInvoiceCosts', 'saleNumbers') + '\nthis.allocateInvoiceCosts = allocateInvoiceCosts;', ctx);
   return ctx;
 }
 function runFunction(name, nextName, ctx) {
