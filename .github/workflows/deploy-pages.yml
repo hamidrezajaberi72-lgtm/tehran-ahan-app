@@ -1,5 +1,12 @@
 name: Deploy Tehran Ahan Web App
 on:
+  push:
+    branches: [main]
+    paths:
+      - 'www/**'
+      - 'icon-192.png'
+      - 'icon-512.png'
+      - '.github/workflows/deploy-pages.yml'
   workflow_dispatch:
 permissions:
   contents: read
