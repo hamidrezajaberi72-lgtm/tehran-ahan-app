@@ -269,7 +269,7 @@ function runFunction(name, nextName, ctx) {
   assert.deepEqual(c.db.sales.map(x => x.goodsTotal), [100, 300], 'goods subtotals are preserved per line');
   assert.deepEqual(c.db.sales.map(x => x.profit), [-15, -45], 'sale costs reduce each line profit proportionally');
   assert.equal(c.db.sales.reduce((a,x) => a+x.total,0), 500, 'allocated sale invoice total is conserved');
-  assert.equal(c.db.sales[0].invoiceCosts[4].amount, 100, 'invoice fee detail remains available for printing');
+  assert.equal(c.db.sales[0].invoiceCosts[3].amount, 100, 'invoice fee detail remains available for printing');
 }
 {
   const c = harness();
