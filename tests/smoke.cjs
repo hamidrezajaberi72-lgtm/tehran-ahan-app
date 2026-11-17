@@ -50,6 +50,7 @@ function harness(extra = {}) {
     buyCalc: () => {},
     resetSale: () => { ctx.saleBasket = []; },
     window: { scrollTo: () => {} },
+    document: { body: { scrollHeight: 1000 } },
     Date,
     Math,
     Set,
