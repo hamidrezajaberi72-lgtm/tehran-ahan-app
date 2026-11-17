@@ -23,6 +23,17 @@ function getFunction(name, nextName) {
   assert.ok(end > start, 'function boundary exists: ' + name);
   return script.slice(start, end);
 }
+{
+  const c = harness();
+  const start = script.indexOf('const jalaliFmt');
+  const end = script.indexOf('function readDate', start);
+  const dateCode = script.slice(start, end) + '\nthis.isoToJalali = isoToJalali; this.jalaliToIso = jalaliToIso;';
+  vm.runInNewContext(dateCode, c);
+  const iso = c.jalaliToIso('۱۴۰۵/۰۸/۲۶');
+  assert.ok(iso, 'Persian digits convert to ISO date');
+  assert.equal(c.isoToJalali(iso), '1405/08/26', 'Persian date round trip');
+  assert.equal(c.jalaliToIso('1405/13/01'), '', 'invalid month rejected');
+}
 function harness(extra = {}) {
   const elements = new Map();
   const $ = id => {
