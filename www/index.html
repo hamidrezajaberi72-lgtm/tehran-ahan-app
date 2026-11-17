@@ -156,7 +156,7 @@ async function backup(){
   localStorage.setItem('tehranAhan_lastBackup',new Date().toISOString());updateSyncStatus();
 }
 function validBackup(d){
-  return !!d && typeof d==='object' && ['sales','buys','checks','people','cash'].every(k=>Array.isArray(d[k])) && (!d.settings || typeof d.settings==='object');
+  return !!d && typeof d==='object' && ['sales','buys','checks','people','cash'].every(k=>Array.isArray(d[k])) && (d.products===undefined || Array.isArray(d.products)) && (!d.settings || typeof d.settings==='object');
 }
 function readBackupFile(file,done){
   if(!file)return;if(file.size>15*1024*1024){alert('حجم فایل بیش از ۱۵ مگابایت است.');return;}
@@ -165,7 +165,7 @@ function readBackupFile(file,done){
 function mergeBackup(e){
   const f=e.target.files&&e.target.files[0];readBackupFile(f,async d=>{
     const next=JSON.parse(JSON.stringify(db)),counts={},conflicts={};
-    ['sales','buys','checks','cash'].forEach(k=>{
+    ['sales','buys','checks','cash','products'].forEach(k=>{
       if(!Array.isArray(next[k]))next[k]=[];let added=0,conflict=0;
       (d[k]||[]).forEach(item=>{
         if(!item||item.id===undefined||item.id===null){conflict++;return;}
@@ -180,7 +180,7 @@ function mergeBackup(e){
     if(d.settings&&confirm('فایل شامل تنظیمات شرکت نیز هست. تنظیمات فعلی با تنظیمات فایل جایگزین شود؟'))next.settings={...(next.settings||{}),...d.settings};
     try{db=next;persist();await persistQueue;fillSettings();localStorage.setItem('tehranAhan_lastSync',new Date().toISOString());updateSyncStatus();
       const addedTotal=Object.values(counts).reduce((a,b)=>a+b,0),conflictTotal=Object.values(conflicts).reduce((a,b)=>a+b,0);
-      alert('ادغام انجام شد.\nرکوردهای جدید: '+addedTotal+'\nموارد تکراریِ متفاوت که برای جلوگیری از پاک‌شدن اطلاعات رد شدند: '+conflictTotal+'\nفروش: '+counts.sales+' | خرید: '+counts.buys+' | چک: '+counts.checks+' | اشخاص: '+counts.people+' | دریافت/پرداخت: '+counts.cash+'\n\nبرای بررسی موارد متعارض، دو نسخه پشتیبان را جداگانه نگه دارید.');
+      alert('ادغام انجام شد.\nرکوردهای جدید: '+addedTotal+'\nموارد تکراریِ متفاوت که برای جلوگیری از پاک‌شدن اطلاعات رد شدند: '+conflictTotal+'\nفروش: '+counts.sales+' | خرید: '+counts.buys+' | چک: '+counts.checks+' | اشخاص: '+counts.people+' | دریافت/پرداخت: '+counts.cash+' | کالاها: '+(counts.products||0)+'\n\nبرای بررسی موارد متعارض، دو نسخه پشتیبان را جداگانه نگه دارید.');
     }catch(err){alert('ذخیره اطلاعات انجام نشد؛ فضای ذخیره‌سازی مرورگر را بررسی کنید.');}
   });e.target.value='';
 }
@@ -191,12 +191,12 @@ function updateSyncStatus(){
 function restore(e){
   const f=e.target.files&&e.target.files[0];readBackupFile(f,async d=>{
     if(confirm('هشدار: تمام اطلاعات فعلی این دستگاه با اطلاعات فایل جایگزین می‌شود. قبل از ادامه از اطلاعات فعلی پشتیبان بگیرید. ادامه می‌دهید؟')){
-      try{const clean={sales:d.sales,buys:d.buys,checks:d.checks,people:d.people,cash:d.cash,settings:d.settings||db.settings};db=clean;persist();await persistQueue;fillSettings();localStorage.setItem('tehranAhan_lastSync',new Date().toISOString());updateSyncStatus();alert('بازیابی کامل انجام شد.');}
+      try{const clean={sales:d.sales,buys:d.buys,checks:d.checks,people:d.people,cash:d.cash,products:Array.isArray(d.products)?d.products:[],settings:d.settings||db.settings};db=clean;persist();await persistQueue;fillSettings();localStorage.setItem('tehranAhan_lastSync',new Date().toISOString());updateSyncStatus();alert('بازیابی کامل انجام شد.');}
       catch(err){alert('بازیابی انجام نشد؛ فضای ذخیره‌سازی مرورگر را بررسی کنید.');}
     }
   });e.target.value='';
 }
-function clearAll(){if(confirm('همه اطلاعات این برنامه حذف شود؟ این کار قابل بازگشت نیست.')){db={sales:[],buys:[],checks:[],people:[],cash:[],settings:{name:'طهران آهن',phone:'',address:'',economic:'',tagline:'تجارت مطمئن ورق'}};persist();fillSettings()}}
+function clearAll(){if(confirm('همه اطلاعات این برنامه حذف شود؟ این کار قابل بازگشت نیست.')){db={sales:[],buys:[],checks:[],people:[],cash:[],products:[],settings:{name:'طهران آهن',phone:'',address:'',economic:'',tagline:'تجارت مطمئن ورق'}};persist();fillSettings()}}
 function report(){let a=val('fromDate')?readDate('fromDate'):'',b=val('toDate')?readDate('toDate'):'',type=val('reportType');if(a===null||b===null)return;let rows=db.sales.filter(x=>(!a||x.date>=a)&&(!b||x.date<=b)&&(type==='all'||(type==='profit'&&x.profit>0)||(type==='due'&&x.total>x.received)));let sum=rows.reduce((t,x)=>t+x.total,0),p=rows.reduce((t,x)=>t+x.profit,0);$('reportResult').innerHTML=`تعداد معاملات: <b>${fmt(rows.length)}</b><br>جمع فروش: <b>${fmt(sum)}</b> ریال<br>سود خالص: <b>${fmt(p)}</b> ریال<br><br>`+rows.map(x=>`${showDate(x.date)} — ${esc(x.customer)} — ${fmt(x.total)} ریال`).join('<br>')}
 ['pointerdown','keydown','touchstart','scroll'].forEach(evt=>document.addEventListener(evt,resetAutoLock,{passive:true}));
 initSecureApp();
