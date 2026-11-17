@@ -19,7 +19,7 @@ header{padding:22px 18px;background:#101820;border-bottom:1px solid var(--line);
 body:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.035;background-repeat:no-repeat;background-position:center 55%;background-size:min(68vw,520px);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 500'%3E%3Cpath d='M300 45 L315 150 L337 150 L350 430 L250 430 L263 150 L285 150 Z M300 45 L300 15 M278 185 H322 M270 250 H330 M260 340 H340' fill='none' stroke='%23d8ad55' stroke-width='8'/%3E%3Ctext x='300' y='475' font-size='46' text-anchor='middle' fill='%23d8ad55' font-family='Arial' font-weight='bold'%3ETEHRAN AHAN%3C/text%3E%3C/svg%3E")}
 header,.wrap{position:relative;z-index:1}
 #invoice{position:relative;isolation:isolate;overflow:hidden;background:#fff;color:#171717;padding:24px;border-radius:12px;min-height:500px}
-#invoice:before{content:"";position:absolute;z-index:-1;inset:0;background-repeat:no-repeat;background-position:center;background-size: min(82%,500px);opacity:.055;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 500'%3E%3Cpath d='M300 45 L315 150 L337 150 L350 430 L250 430 L263 150 L285 150 Z M300 45 L300 15 M278 185 H322 M270 250 H330 M260 340 H340' fill='none' stroke='%23866a2e' stroke-width='8'/%3E%3Ctext x='300' y='475' font-size='46' text-anchor='middle' fill='%23866a2e' font-family='Arial' font-weight='bold'%3ETEHRAN AHAN%3C/text%3E%3C/svg%3E")}
+#invoice:before{content:"";position:absolute;z-index:0;inset:0;background:url("assets/tehran-ahan-logo.jpg") center 54%/min(78%,560px) auto no-repeat;opacity:.065;pointer-events:none}
 #invoice h2,#invoice h3{color:#7c5b1f}
 .invoice-brand{position:relative;text-align:center;padding:8px 12px 18px;margin:-4px 0 20px;border-bottom:3px solid #b58b3d}
 .invoice-brand:after{content:"";position:absolute;bottom:-6px;left:42%;width:16%;height:3px;background:#172633;border-radius:4px}
@@ -27,7 +27,7 @@ header,.wrap{position:relative;z-index:1}
 .invoice-brand-name{font-size:27px;font-weight:900;letter-spacing:-.5px;color:#8b6727}
 .invoice-logo-word{display:flex;direction:rtl;align-items:center;justify-content:center;gap:2px;font-size:32px;line-height:1.35;font-weight:900;color:#8b6727;text-shadow:0 1px 0 #fff,0 2px 0 #d9c69f}
 .invoice-logo-tower{width:25px;height:64px;flex:none;filter:drop-shadow(0 1px 1px #b58b3d)}
-#invoice:after{content:"طهران آهن";position:absolute;z-index:0;top:48%;left:50%;transform:translate(-50%,-50%);font-size:clamp(42px,9vw,92px);font-weight:900;white-space:nowrap;color:#9a742e;opacity:.055;pointer-events:none}
+#invoice:after{content:none}
 #invoice>*{position:relative;z-index:1}
 .invoice-brand-tag{font-size:12px;color:#666;margin-top:3px}
 .invoice-brand-contact{display:block!important;font-size:11px;color:#555;line-height:1.8;margin:7px auto 0;max-width:95%;text-align:center}
@@ -37,6 +37,7 @@ header,.wrap{position:relative;z-index:1}
 .invoice-brand{padding:0 0 14px;margin:0 0 15px;border:1px solid #b58b3d;border-radius:14px;overflow:hidden;background:linear-gradient(145deg,#111820,#26333d 55%,#10161d);box-shadow:0 9px 24px #17263320}
 .invoice-brand-art{position:relative;padding:16px 10px 12px;background:radial-gradient(ellipse at 50% 100%,#6d5122 0%,#28313a 36%,#111820 78%);border-bottom:1px solid #bd9345}
 .invoice-brand-art:before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(135deg,transparent 0 24px,#ffffff08 25px 26px);pointer-events:none}
+.invoice-logo-image{display:block;width:min(100%,620px);height:auto;max-height:205px;object-fit:contain;margin:0 auto;filter:drop-shadow(0 5px 12px #0009)}
 .invoice-brand .invoice-logo-word{position:relative;color:#f0e5cb;font-size:clamp(30px,7vw,48px);letter-spacing:-1.5px;text-shadow:0 2px 0 #75551e,0 5px 14px #000;gap:3px}
 .invoice-brand .invoice-logo-tower{width:clamp(26px,6vw,42px);height:clamp(64px,14vw,92px);filter:drop-shadow(0 0 7px #e7ae43)}
 .invoice-brand-tag{position:relative;color:#f0d18c;font-size:clamp(11px,2.7vw,15px);font-weight:700;letter-spacing:.1px;margin-top:5px}
@@ -220,8 +221,7 @@ function empty(n){return `<tr><td colspan="${n}" class="empty">موردی ثبت
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function removePerson(n){db.people=db.people.filter(x=>x.name!==decodeURIComponent(n));persist()}
 function invoiceBrandHeader(s,title){
-const tower=`<svg class="invoice-logo-tower" viewBox="0 0 40 110" role="img" aria-label="برج میلاد"><path d="M20 2V13 M17 13H23 L25 25 31 33 27 39 24 49 34 104H6L16 49 13 39 9 33 15 25 17 13Z" fill="none" stroke="#d5a849" stroke-width="2.8" stroke-linejoin="round"/><path d="M14 39H26 M12 48H28 M10 65H30 M8 88H32" stroke="#d5a849" stroke-width="2"/></svg>`;
-return `<div class="invoice-brand"><div class="invoice-brand-art"><div class="invoice-logo-word" aria-label="طهران آهن"><span>طهر</span>${tower}<span>ن آهن</span></div><div class="invoice-brand-tag">${esc(s.tagline||'عرضه و فروش انواع ورق‌های فلزی')}</div></div><div class="invoice-brand-contact">${[s.phone?'تماس: '+esc(s.phone):'',s.address?'آدرس: '+esc(s.address):''].filter(Boolean).join('　 |　 ')}</div></div><div class="invoice-doc-title"><strong>${esc(title)}</strong><span>TEHRAN AHAN · طهران آهن</span></div>`;
+return `<div class="invoice-brand"><div class="invoice-brand-art"><img class="invoice-logo-image" src="assets/tehran-ahan-logo.jpg" alt="لوگوی طهران آهن"><div class="invoice-brand-tag">${esc(s.tagline||'عرضه و فروش انواع ورق‌های فلزی')}</div></div><div class="invoice-brand-contact">${[s.phone?'تماس: '+esc(s.phone):'',s.address?'آدرس: '+esc(s.address):''].filter(Boolean).join('　 |　 ')}</div></div><div class="invoice-doc-title"><strong>${esc(title)}</strong><span>TEHRAN AHAN · طهران آهن</span></div>`;
 }
 function makeInvoice(id,provisional=false){
 let x=db.sales.find(x=>x.id===id);if(!x)return;
