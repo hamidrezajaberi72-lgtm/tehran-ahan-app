@@ -10,7 +10,7 @@ new Function(script);
 
 const declarations = [...script.matchAll(/function\s+([A-Za-z_$][\w$]*)\s*\(/g)].map(x => x[1]);
 assert.equal(new Set(declarations).size, declarations.length, 'no duplicate function declarations');
-for (const id of ['saleBasket','buyBasket','deliveryRecipient','deliveryDate','deliveryTime','productNames','saleCostExpense','saleCostStorage','saleCostScale','saleCostCut','saleCostFreight','buyCostExpense','buyCostStorage','buyCostScale','buyCostCut','buyCostFreight']) {
+for (const id of ['saleBasket','buyBasket','deliveryRecipient','deliveryDate','deliveryTime','productNames','saleCostExpense','saleCostScale','saleCostCut','saleCostFreight','buyCostExpense','buyCostScale','buyCostCut','buyCostFreight']) {
   assert.ok(html.includes('id="' + id + '"'), 'required element exists: ' + id);
 }
 assert.match(script, /async function lockApp\(\)\{await persistQueue;/, 'locking waits for pending encrypted writes');
@@ -67,7 +67,7 @@ function harness(extra = {}) {
     rememberProduct: name => { if (!ctx.db.products.some(p => p.name === name)) ctx.db.products.push({ id: 1, name }); },
     saleNumbers: () => {},
     buyCalc: () => {},
-    invoiceCostFields: prefix => ['Expense','Storage','Scale','Cut','Freight'].map(k => ({ key: k[0].toLowerCase()+k.slice(1), label: ({Expense:'خرج',Storage:'انبارداری',Scale:'باسکول',Cut:'برش',Freight:'کرایه حمل'})[k], amount: Number(values[prefix+'Cost'+k] || 0) })),
+    invoiceCostFields: prefix => ['Expense','Scale','Cut','Freight'].map(k => ({ key: k[0].toLowerCase()+k.slice(1), label: ({Expense:'خرج و انبارداری',Scale:'باسکول',Cut:'برش',Freight:'کرایه حمل'})[k], amount: Number(values[prefix+'Cost'+k] || 0) })),
     invoiceCostTotal: costs => costs.reduce((sum,x) => sum+x.amount,0),
     invoiceBrandHeader: (settings,title) => `<div class="invoice-brand">${String(settings.name||'طهران آهن')}</div><div class="invoice-doc-title">${title}</div>`,
     resetSale: () => { ctx.saleBasket = []; },
@@ -223,20 +223,20 @@ function runFunction(name, nextName, ctx) {
   const c = harness();
   c.values.customer = 'مشتری هزینه‌دار';
   c.values.received = '0';
-  Object.assign(c.values, { saleCostExpense: '10', saleCostStorage: '20', saleCostScale: '30', saleCostCut: '40', saleCostFreight: '50' });
+  Object.assign(c.values, { saleCostExpense: '30', saleCostScale: '30', saleCostCut: '40', saleCostFreight: '50' });
   c.saleBasket = [{ sheet: 'ورق', weight: 1, unit: 'تن', sell: 1000, total: 1000, goodsTotal: undefined, profit: 100, rate: 10, commission: 10 }];
   runFunction('saveSale', 'resetSale', c)();
   assert.equal(c.db.sales[0].total, 1150, 'sales invoice includes all itemized costs');
   assert.equal(c.db.sales[0].goodsTotal, 1000, 'goods subtotal remains separate');
   assert.equal(c.db.sales[0].profit, -50, 'invoice expenses reduce net profit');
-  assert.deepEqual(c.db.sales[0].invoiceCosts.map(x => x.amount), [10, 20, 30, 40, 50]);
+  assert.deepEqual(c.db.sales[0].invoiceCosts.map(x => x.amount), [30, 30, 40, 50]);
   assert.equal(c.db.sales[0].commission, 0, 'commission uses net profit after invoice expenses');
 }
 {
   const c = harness();
   c.values.supplier = 'تأمین‌کننده هزینه‌دار';
   c.values.buyPaid = '0';
-  Object.assign(c.values, { buyCostExpense: '10', buyCostStorage: '20', buyCostScale: '30', buyCostCut: '40', buyCostFreight: '50' });
+  Object.assign(c.values, { buyCostExpense: '30', buyCostScale: '30', buyCostCut: '40', buyCostFreight: '50' });
   c.buyBasket = [{ sheet: 'نبشی', weight: 1, unit: 'شاخه', unitPrice: 500, total: 500 }];
   runFunction('saveBuy', 'saveCheck', c)();
   assert.equal(c.db.buys[0].total, 650, 'purchase invoice includes all itemized costs');
