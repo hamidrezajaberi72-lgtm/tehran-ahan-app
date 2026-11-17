@@ -166,7 +166,7 @@ function runFunction(name, nextName, ctx) {
   assert.match(c.$('invoiceBody').innerHTML, /جمع کل با هزینه‌ها<\/span><strong>140/);
   assert.match(c.$('invoiceBody').innerHTML, /invoice-brand/);
   assert.match(c.$('invoiceBody').innerHTML, /فاکتور قطعی فروش/);
-  assert.match(c.$('invoiceBody').innerHTML, /مبلغ دریافت‌شده: 50/);
+  assert.match(c.$('invoiceBody').innerHTML, /مبلغ دریافت‌شده<\/span><b>50/);
   assert.equal((c.$('invoiceBody').innerHTML.match(/<tr>/g) || []).length, 3);
   c.db.sales[0].deliveryRecipient = 'تحویل‌گیرنده تست';
   c.db.sales[0].deliveryDate = '۱۴۰۵/۰۸/۲۶';
