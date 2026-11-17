@@ -1,0 +1,8 @@
+{
+  "appId": "ir.tehranahan.app",
+  "appName": "طهران آهن",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https"
+  }
+}
