@@ -10,7 +10,7 @@ new Function(script);
 
 const declarations = [...script.matchAll(/function\s+([A-Za-z_$][\w$]*)\s*\(/g)].map(x => x[1]);
 assert.equal(new Set(declarations).size, declarations.length, 'no duplicate function declarations');
-for (const id of ['saleBasket','buyBasket','deliveryRecipient','deliveryDate','deliveryTime','productNames']) {
+for (const id of ['saleBasket','buyBasket','deliveryRecipient','deliveryDate','deliveryTime','productNames','saleCostExpense','saleCostStorage','saleCostScale','saleCostCut','saleCostFreight','buyCostExpense','buyCostStorage','buyCostScale','buyCostCut','buyCostFreight']) {
   assert.ok(html.includes('id="' + id + '"'), 'required element exists: ' + id);
 }
 assert.match(script, /async function lockApp\(\)\{await persistQueue;/, 'locking waits for pending encrypted writes');
@@ -212,4 +212,39 @@ function runFunction(name, nextName, ctx) {
   assert.equal(c.db.stockMovements[0].quantity, 25);
   assert.equal(c.db.products[0].name, 'نبشی');
 }
+{
+  const c = harness();
+  c.values.customer = 'مشتری هزینه‌دار';
+  c.values.received = '0';
+  Object.assign(c.values, { saleCostExpense: '10', saleCostStorage: '20', saleCostScale: '30', saleCostCut: '40', saleCostFreight: '50' });
+  c.saleBasket = [{ sheet: 'ورق', weight: 1, unit: 'تن', sell: 1000, total: 1000, goodsTotal: undefined, profit: 100, rate: 10, commission: 10 }];
+  runFunction('saveSale', 'resetSale', c)();
+  assert.equal(c.db.sales[0].total, 1150, 'sales invoice includes all itemized costs');
+  assert.equal(c.db.sales[0].goodsTotal, 1000, 'goods subtotal remains separate');
+  assert.equal(c.db.sales[0].profit, -50, 'invoice expenses reduce net profit');
+  assert.deepEqual(c.db.sales[0].invoiceCosts.map(x => x.amount), [10, 20, 30, 40, 50]);
+  assert.equal(c.db.sales[0].commission, 0, 'commission uses net profit after invoice expenses');
+}
+{
+  const c = harness();
+  c.values.supplier = 'تأمین‌کننده هزینه‌دار';
+  c.values.buyPaid = '0';
+  Object.assign(c.values, { buyCostExpense: '10', buyCostStorage: '20', buyCostScale: '30', buyCostCut: '40', buyCostFreight: '50' });
+  c.buyBasket = [{ sheet: 'نبشی', weight: 1, unit: 'شاخه', unitPrice: 500, total: 500 }];
+  runFunction('saveBuy', 'saveCheck', c)();
+  assert.equal(c.db.buys[0].total, 650, 'purchase invoice includes all itemized costs');
+  assert.equal(c.db.buys[0].goodsTotal, 500, 'purchase goods subtotal remains separate');
+  assert.deepEqual(c.db.buys[0].invoiceCosts.map(x => x.amount), [10, 20, 30, 40, 50]);
+}
+{
+  const c = harness();
+  c.values.customer = 'مشتری';
+  c.values.received = '999';
+  c.values.saleCostFreight = '50';
+  c.saleBasket = [{ sheet: 'ورق', weight: 1, unit: 'تن', sell: 100, total: 100, profit: 0, rate: 0 }];
+  runFunction('saveSale', 'resetSale', c)();
+  assert.equal(c.db.sales.length, 0, 'overpayment check includes invoice-level costs');
+  assert.equal(c.saleBasket[0].total, 100, 'failed save does not apply invoice costs twice');
+}
+
 console.log('Tehran Ahan smoke tests passed: syntax, schema, sale/purchase calculations, payment allocation, invoice print, delivery receipt, grouped deletion.');
