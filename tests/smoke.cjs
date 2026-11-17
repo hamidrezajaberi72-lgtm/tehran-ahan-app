@@ -67,6 +67,8 @@ function harness(extra = {}) {
     rememberProduct: name => { if (!ctx.db.products.some(p => p.name === name)) ctx.db.products.push({ id: 1, name }); },
     saleNumbers: () => {},
     buyCalc: () => {},
+    invoiceCostFields: prefix => ['Expense','Storage','Scale','Cut','Freight'].map(k => ({ key: k[0].toLowerCase()+k.slice(1), label: ({Expense:'خرج',Storage:'انبارداری',Scale:'باسکول',Cut:'برش',Freight:'کرایه حمل'})[k], amount: Number(values[prefix+'Cost'+k] || 0) })),
+    invoiceCostTotal: costs => costs.reduce((sum,x) => sum+x.amount,0),
     resetSale: () => { ctx.saleBasket = []; },
     window: { scrollTo: () => {} },
     document: { body: { scrollHeight: 1000 } },
