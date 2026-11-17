@@ -191,6 +191,7 @@ function runFunction(name, nextName, ctx) {
     { id: 1, name: 'ورق سیاه', unit: 'کیلوگرم', quantity: 200, type: 'in', date: '2026-11-17' },
     { id: 2, name: 'ورق سیاه', unit: 'کیلوگرم', quantity: 100, type: 'out', date: '2026-11-17' }
   ];
+  runFunction('stockUnitInfo', 'renderInventory', c);
   runFunction('renderInventory', 'saveStockMovement', c)();
   assert.match(c.$('stockRows').innerHTML, /800/, 'ton and kg are combined in kg base units');
 }
