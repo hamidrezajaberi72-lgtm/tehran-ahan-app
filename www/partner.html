@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#101820"><meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" href="./icon-192.png">
+<title>دریافت و به‌روزرسانی | طهران آهن</title>
+<style>
+:root{color-scheme:dark;--bg:#0b1117;--panel:#14202a;--gold:#d8ad55;--text:#f3f5f7;--muted:#aab5bf;--line:#30404c}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(145deg,#0b1117,#172632);color:var(--text);font:15px Tahoma,Arial,sans-serif;min-height:100vh;padding:24px}
+main{max-width:620px;margin:5vh auto}.brand{text-align:center;margin-bottom:28px}.brand img{width:min(100%,330px);height:auto;max-height:130px;object-fit:contain}.brand h1{font-size:23px;margin:12px 0 6px;color:var(--gold)}.brand p,.muted{color:var(--muted);line-height:2}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:22px;margin:14px 0;box-shadow:0 12px 35px #0003}.card h2{font-size:18px;margin:0 0 12px;color:var(--gold)}.btn{display:block;text-align:center;text-decoration:none;background:var(--gold);color:#171717;font-weight:bold;padding:15px;border-radius:12px;margin-top:14px}.btn.secondary{background:#253542;color:var(--text);border:1px solid #52616c}.steps{padding-right:22px;line-height:2.1}.status{font-size:13px;color:var(--muted);margin-top:12px}
+</style></head>
+<body><main>
+<div class="brand"><img src="./assets/tehran-ahan-logo.jpg" alt="نشان طهران آهن"><h1>طهران آهن</h1><p>صفحه دریافت نسخه و راهنمای استفاده شریک کاری</p></div>
+<section class="card"><h2>۱. ورود به برنامه و دریافت آخرین نسخه</h2><p class="muted">برای دریافت آخرین تغییرات، اینترنت را روشن کنید و برنامه را از همین دکمه باز کنید. اگر نسخه تازه منتشر شده باشد، مرورگر آن را دریافت می‌کند. اطلاعات کاری ذخیره‌شده روی گوشی شما پاک نمی‌شود.</p><a class="btn" href="./index.html">باز کردن برنامه طهران آهن</a><p class="status" id="versionStatus">در حال بررسی نسخه صفحه…</p></section>
+<section class="card"><h2>۲. نصب روی صفحه اصلی گوشی</h2><p><b>آیفون:</b></p><ol class="steps"><li>این صفحه را در Safari باز کنید.</li><li>دکمه Share (اشتراک‌گذاری) را بزنید.</li><li>گزینه Add to Home Screen (افزودن به صفحه اصلی) را انتخاب کنید.</li><li>در صورت نمایش، Open as Web App را روشن و Add را بزنید.</li></ol><p><b>اندروید:</b></p><ol class="steps"><li>این صفحه را در Chrome باز کنید.</li><li>منوی سه‌نقطه را باز کنید.</li><li>Install app یا Add to Home screen را انتخاب کنید.</li></ol></section>
+<section class="card"><h2>۳. دریافت اطلاعاتی که مدیر ارسال می‌کند</h2><p class="muted">وقتی مدیر فایل پشتیبان رمزگذاری‌شده را برای شما فرستاد، وارد برنامه شوید، بخش «پشتیبان‌گیری» را باز کنید و گزینه «انتقال اطلاعات از فایل پشتیبان (ادغام)» را بزنید. فایل را انتخاب کنید و رمز همان فایل را وارد کنید.</p><p class="muted">ادغام، اطلاعات جدید را اضافه می‌کند و موارد قبلی دستگاه را عمداً حذف نمی‌کند. اگر موردی با شناسه یکسان ولی محتوای متفاوت وجود داشته باشد، برای جلوگیری از پاک‌شدن داده‌ها رد می‌شود. قبل از هر بازیابی کامل، از اطلاعات فعلی خودتان پشتیبان بگیرید.</p></section>
+<section class="card"><h2>نکته مهم</h2><p class="muted">این برنامه حساب مشترک یا همگام‌سازی خودکار ندارد. اطلاعات روی هر دستگاه جداگانه و آفلاین نگهداری می‌شود. فقط برای دریافت نسخه جدید یا فایل اطلاعات ارسالی، اینترنت لازم است.</p><a class="btn secondary" href="./index.html#backup">رفتن به بخش پشتیبان‌گیری برنامه</a></section>
+</main>
+<script>
+const status=document.getElementById('versionStatus');
+fetch('./manifest.webmanifest',{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error();return r.json()}).then(m=>{status.textContent='نسخه وب فعال: '+m.name+' — برای دریافت تغییرات، برنامه را باز کنید.'}).catch(()=>{status.textContent='وضعیت نسخه پس از اتصال به اینترنت قابل بررسی است.'});
+if('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('./sw.js').then(reg=>reg.update()).catch(()=>{});
+</script></body></html>
