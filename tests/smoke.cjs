@@ -160,7 +160,7 @@ function runFunction(name, nextName, ctx) {
     { id: 2, invoiceNo: 'THA-1001', date: '2026-11-17', customer: 'الف', sheet: 'نبشی', weight: 2, unit: 'شاخه', sell: 20, total: 40, received: 0, profit: 4 }
   ];
   runFunction('makeInvoice', 'makeDeliveryReceipt', c)(1, false);
-  assert.match(c.$('invoiceBody').innerHTML, /جمع کل: 140/);
+  assert.match(c.$('invoiceBody').innerHTML, /جمع کل با هزینه‌ها: 140/);
   assert.match(c.$('invoiceBody').innerHTML, /مبلغ دریافت‌شده: 50/);
   assert.equal((c.$('invoiceBody').innerHTML.match(/<tr>/g) || []).length, 3);
   c.db.sales[0].deliveryRecipient = 'تحویل‌گیرنده تست';
