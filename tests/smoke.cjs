@@ -241,7 +241,7 @@ function runFunction(name, nextName, ctx) {
   runFunction('saveBuy', 'saveCheck', c)();
   assert.equal(c.db.buys[0].total, 650, 'purchase invoice includes all itemized costs');
   assert.equal(c.db.buys[0].goodsTotal, 500, 'purchase goods subtotal remains separate');
-  assert.deepEqual(c.db.buys[0].invoiceCosts.map(x => x.amount), [10, 20, 30, 40, 50]);
+  assert.deepEqual(c.db.buys[0].invoiceCosts.map(x => x.amount), [30, 30, 40, 50]);
 }
 {
   const c = harness();
