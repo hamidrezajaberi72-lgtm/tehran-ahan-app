@@ -77,6 +77,7 @@ function harness(extra = {}) {
     Set,
     ...extra
   };
+  vm.runInNewContext(getFunction('allocateInvoiceCosts', 'saleNumbers') + '\\nthis.allocateInvoiceCosts = allocateInvoiceCosts;', ctx);
   return ctx;
 }
 function runFunction(name, nextName, ctx) {
@@ -249,4 +250,4 @@ function runFunction(name, nextName, ctx) {
   assert.equal(c.saleBasket[0].total, 100, 'failed save does not apply invoice costs twice');
 }
 
-console.log('Tehran Ahan smoke tests passed: syntax, schema, sale/purchase calculations, payment allocation, invoice print, delivery receipt, grouped deletion.');
+\n{\n  const c = harness();\n  c.values.customer = 'مشتری چندقلمی';\n  c.values.received = '0';\n  c.values.saleCostFreight = '100';\n  c.saleBasket = [\n    { sheet: 'ورق', weight: 1, unit: 'تن', sell: 100, total: 100, profit: 10, rate: 10, commission: 1 },\n    { sheet: 'نبشی', weight: 1, unit: 'شاخه', sell: 300, total: 300, profit: 30, rate: 10, commission: 3 }\n  ];\n  runFunction('saveSale', 'resetSale', c)();\n  assert.deepEqual(c.db.sales.map(x => x.total), [125, 375], 'sale invoice costs are allocated proportionally across lines');\n  assert.deepEqual(c.db.sales.map(x => x.goodsTotal), [100, 300], 'goods subtotals are preserved per line');\n  assert.deepEqual(c.db.sales.map(x => x.profit), [-15, -45], 'sale costs reduce each line profit proportionally');\n  assert.equal(c.db.sales.reduce((a,x) => a+x.total,0), 500, 'allocated sale invoice total is conserved');\n  assert.equal(c.db.sales[0].invoiceCosts[4].amount, 100, 'invoice fee detail remains available for printing');\n}\n{\n  const c = harness();\n  c.values.supplier = 'تأمین‌کننده چندقلمی';\n  c.values.buyPaid = '0';\n  c.values.buyCostFreight = '100';\n  c.buyBasket = [\n    { sheet: 'ورق', weight: 1, unit: 'تن', unitPrice: 100, total: 100 },\n    { sheet: 'نبشی', weight: 1, unit: 'شاخه', unitPrice: 300, total: 300 }\n  ];\n  runFunction('saveBuy', 'saveCheck', c)();\n  assert.deepEqual(c.db.buys.map(x => x.total), [125, 375], 'purchase costs are allocated proportionally across lines');\n  assert.deepEqual(c.db.buys.map(x => x.goodsTotal), [100, 300], 'purchase goods subtotals are preserved per line');\n  assert.equal(c.db.buys.reduce((a,x) => a+x.total,0), 500, 'allocated purchase invoice total is conserved');\n}\n\nconsole.log('Tehran Ahan smoke tests passed: syntax, schema, sale/purchase calculations, payment allocation, invoice print, delivery receipt, grouped deletion.');
