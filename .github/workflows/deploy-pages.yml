@@ -1,0 +1,39 @@
+name: Deploy Tehran Ahan Web App
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'www/**'
+      - 'icon-192.png'
+      - 'icon-512.png'
+      - '.github/workflows/deploy-pages.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: true
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prepare site
+        run: |
+          cp icon-192.png www/icon-192.png
+          cp icon-512.png www/icon-512.png
+          test -s www/index.html
+          test -s www/manifest.webmanifest
+          test -s www/sw.js
+          test -s www/partner.html
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: www
+      - id: deployment
+        uses: actions/deploy-pages@v4
