@@ -34,6 +34,14 @@ function getFunction(name, nextName) {
   assert.equal(c.isoToJalali(iso), '1405/08/26', 'Persian date round trip');
   assert.equal(c.jalaliToIso('1405/13/01'), '', 'invalid month rejected');
 }
+{
+  const c = harness();
+  const valid = runFunction('validBackup', 'readBackupFile', c);
+  assert.equal(valid({ sales: [], buys: [], checks: [], people: [], cash: [], products: [], stockMovements: [] }), true);
+  assert.equal(valid({ sales: [], buys: [], checks: [], people: [], cash: [], stockMovements: 'bad' }), false);
+  assert.match(script, /\['sales','buys','checks','cash','products','stockMovements'\]\.forEach/);
+  assert.match(script, /stockMovements:Array\.isArray\(d\.stockMovements\)\?d\.stockMovements:\[\]/);
+}
 function harness(extra = {}) {
   const elements = new Map();
   const $ = id => {
