@@ -45,7 +45,7 @@ function getFunction(name, nextName) {
 function harness(extra = {}) {
   const elements = new Map();
   const $ = id => {
-    if (!elements.has(id)) elements.set(id, { value: '', innerHTML: '', textContent: '', style: { display: 'none' }, readOnly: false });
+    if (!elements.has(id)) elements.set(id, { value: '', innerHTML: '', textContent: '', style: { display: 'none' }, readOnly: false, focus: () => {} });
     return elements.get(id);
   };
   const values = {};
