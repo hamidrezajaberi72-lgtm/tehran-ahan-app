@@ -194,7 +194,7 @@ function runFunction(name, nextName, ctx) {
 {
   const c = harness();
   c.db.buys = [{ sheet: 'ورق سیاه', unit: 'تن', weight: 1 }];
-  c.db.sales = [{ sheet: 'ورق سیاه', unit: 'کیلوگرم', weight: 300 }];
+  c.db.sales = [{ sheet: 'ورق سیاه', unit: 'کیلوگرم', weight: 300 }, { sheet: 'ورق سیاه', unit: 'کیلوگرم', weight: 500, status: 'لغو شده' }];
   c.db.stockMovements = [
     { id: 1, name: 'ورق سیاه', unit: 'کیلوگرم', quantity: 200, type: 'in', date: '2026-11-17' },
     { id: 2, name: 'ورق سیاه', unit: 'کیلوگرم', quantity: 100, type: 'out', date: '2026-11-17' }
