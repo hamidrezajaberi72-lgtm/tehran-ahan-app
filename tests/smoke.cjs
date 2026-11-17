@@ -81,6 +81,10 @@ function runFunction(name, nextName, ctx) {
   c.values.customer = 'مشتری تست';
   c.values.received = '150';
   c.values.salesperson = 'فروشنده';
+  c.values.deliveryRecipient = 'تحویل‌گیرنده';
+  c.values.deliveryPhone = '09120000000';
+  c.values.deliveryDate = '۱۴۰۵/۰۸/۲۶';
+  c.values.deliveryTime = '۱۴:۳۰';
   c.saleBasket = [
     { sheet: 'ورق سیاه', weight: 1, unit: 'کیلوگرم', sell: 100, total: 100, profit: 10, commission: 1 },
     { sheet: 'نبشی', weight: 2, unit: 'شاخه', sell: 100, total: 200, profit: 20, commission: 2 }
@@ -92,6 +96,9 @@ function runFunction(name, nextName, ctx) {
   assert.deepEqual(c.db.sales.map(x => x.received), [100, 50]);
   assert.equal(c.db.sales.reduce((a, x) => a + x.received, 0), 150);
   assert.equal(c.db.sales.reduce((a, x) => a + x.total, 0), 300);
+  assert.equal(c.db.sales[0].deliveryRecipient, 'تحویل‌گیرنده');
+  assert.equal(c.db.sales[0].deliveryDate, '۱۴۰۵/۰۸/۲۶');
+  assert.equal(c.db.settings.invoiceNextNumber, 1002);
 }
 
 {
@@ -156,4 +163,13 @@ function runFunction(name, nextName, ctx) {
   assert.deepEqual(c.db.sales.map(x => x.id), [3], 'deleting a sales invoice removes all its lines');
 }
 
+{
+  const c = harness();
+  c.db.settings.invoiceNextNumber = 1042;
+  c.values.customer = 'مشتری بعدی';
+  c.values.received = '0';
+  c.saleBasket = [{ sheet: 'پروفیل', weight: 1, unit: 'شاخه', sell: 10, total: 10, profit: 0, commission: 0 }];
+  runFunction('saveSale', 'resetSale', c)();
+  assert.equal(c.db.sales[0].invoiceNo, 'THA-01042', 'invoice sequence survives removal of old sales');
+}
 console.log('Tehran Ahan smoke tests passed: syntax, schema, sale/purchase calculations, payment allocation, invoice print, delivery receipt, grouped deletion.');
