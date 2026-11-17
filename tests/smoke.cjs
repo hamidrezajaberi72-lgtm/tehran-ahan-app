@@ -183,4 +183,24 @@ function runFunction(name, nextName, ctx) {
   runFunction('saveSale', 'resetSale', c)();
   assert.equal(c.db.sales[0].invoiceNo, 'THA-01042', 'invoice sequence survives removal of old sales');
 }
+{
+  const c = harness();
+  c.db.buys = [{ sheet: 'ورق سیاه', unit: 'تن', weight: 1 }];
+  c.db.sales = [{ sheet: 'ورق سیاه', unit: 'کیلوگرم', weight: 300 }];
+  c.db.stockMovements = [
+    { id: 1, name: 'ورق سیاه', unit: 'کیلوگرم', quantity: 200, type: 'in', date: '2026-11-17' },
+    { id: 2, name: 'ورق سیاه', unit: 'کیلوگرم', quantity: 100, type: 'out', date: '2026-11-17' }
+  ];
+  runFunction('renderInventory', 'saveStockMovement', c)();
+  assert.match(c.$('stockRows').innerHTML, /800/, 'ton and kg are combined in kg base units');
+}
+
+{
+  const c = harness();
+  Object.assign(c.values, { stockName: 'نبشی', stockQty: '25', stockUnit: 'شاخه', stockType: 'in', stockNote: 'موجودی اول دوره' });
+  runFunction('saveStockMovement', 'saveCheck', c)();
+  assert.equal(c.db.stockMovements.length, 1);
+  assert.equal(c.db.stockMovements[0].quantity, 25);
+  assert.equal(c.db.products[0].name, 'نبشی');
+}
 console.log('Tehran Ahan smoke tests passed: syntax, schema, sale/purchase calculations, payment allocation, invoice print, delivery receipt, grouped deletion.');
