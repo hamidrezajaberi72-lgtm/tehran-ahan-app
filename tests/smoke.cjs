@@ -78,6 +78,7 @@ function harness(extra = {}) {
     ...extra
   };
   vm.runInNewContext(getFunction('allocateInvoiceCosts', 'saleNumbers') + '\nthis.allocateInvoiceCosts = allocateInvoiceCosts;', ctx);
+  vm.runInNewContext(getFunction('validNonNegative', 'invoiceCostFields') + '\nthis.validNonNegative = validNonNegative;', ctx);
   return ctx;
 }
 function runFunction(name, nextName, ctx) {
@@ -282,5 +283,24 @@ function runFunction(name, nextName, ctx) {
   assert.equal(c.db.buys.reduce((a,x) => a+x.total,0), 500, 'allocated purchase invoice total is conserved');
 }
 
+
+{
+  const c = harness();
+  c.values.customer = 'مشتری';
+  c.values.received = '0';
+  c.values.saleCostFreight = '-25';
+  c.saleBasket = [{ sheet: 'ورق', weight: 1, unit: 'تن', sell: 100, total: 100, profit: 10, rate: 0 }];
+  runFunction('saveSale', 'resetSale', c)();
+  assert.equal(c.db.sales.length, 0, 'negative invoice costs are rejected');
+}
+{
+  const c = harness();
+  c.values.supplier = 'تأمین‌کننده';
+  c.values.buyPaid = '0';
+  c.values.buyCostFreight = '-1';
+  c.buyBasket = [{ sheet: 'ورق', weight: 1, unit: 'تن', unitPrice: 100, total: 100 }];
+  runFunction('saveBuy', 'saveCheck', c)();
+  assert.equal(c.db.buys.length, 0, 'negative purchase costs are rejected');
+}
 
 console.log('Tehran Ahan smoke tests passed: syntax, schema, sale/purchase calculations, payment allocation, invoice print, delivery receipt, grouped deletion.');
